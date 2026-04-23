@@ -5,7 +5,7 @@ package com.digis01.FCruzPokemonAPI.JPA;
 public class Region {
     
     private int idRegion;
-    private String nombre;
+    private String nombreRegion;
 
     public int getIdRegion() {
         return idRegion;
@@ -16,11 +16,11 @@ public class Region {
     }
 
     public String getNombre() {
-        return nombre;
+        return nombreRegion;
     }
 
     public void setNombre(String nombre) {
-        this.nombre = nombre;
+        this.nombreRegion = nombre;
     }
     
     

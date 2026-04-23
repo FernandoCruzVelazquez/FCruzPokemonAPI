@@ -4,7 +4,7 @@ package com.digis01.FCruzPokemonAPI.JPA;
 public class Tipo {
     
     private int idTipo;
-    private String nombre;
+    private String nombreTipo;
 
     public int getIdTipo() {
         return idTipo;
@@ -15,11 +15,11 @@ public class Tipo {
     }
 
     public String getNombre() {
-        return nombre;
+        return nombreTipo;
     }
 
     public void setNombre(String nombre) {
-        this.nombre = nombre;
+        this.nombreTipo = nombre;
     }
     
     

@@ -4,7 +4,7 @@ package com.digis01.FCruzPokemonAPI.JPA;
 public class Pokemon {
     
     private int idPokemon;
-    private String nombre;
+    private String nombrePokemon;
     private double altura;
     private double peso;
     private int experienciaBase;
@@ -19,11 +19,11 @@ public class Pokemon {
     }
 
     public String getNombre() {
-        return nombre;
+        return nombrePokemon;
     }
 
     public void setNombre(String nombre) {
-        this.nombre = nombre;
+        this.nombrePokemon = nombre;
     }
 
     public double getAltura() {

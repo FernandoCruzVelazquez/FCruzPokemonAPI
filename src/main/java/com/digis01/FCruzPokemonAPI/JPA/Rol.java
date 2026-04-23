@@ -1,10 +1,20 @@
-
 package com.digis01.FCruzPokemonAPI.JPA;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class Rol {
-    
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idrol")
     private int idRol;
-    private String nombre;
+    @Column(name = "nombrerol")
+    private String nombreRol;
 
     public int getIdRol() {
         return idRol;
@@ -14,14 +24,12 @@ public class Rol {
         this.idRol = idRol;
     }
 
-    public String getNombre() {
-        return nombre;
+    public String getNombreRol() {
+        return nombreRol;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public void setNombreRol(String nombre) {
+        this.nombreRol = nombre;
     }
-    
-    
-    
+
 }
