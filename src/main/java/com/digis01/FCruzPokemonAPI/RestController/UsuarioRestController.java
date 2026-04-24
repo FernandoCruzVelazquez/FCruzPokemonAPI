@@ -37,7 +37,6 @@ public class UsuarioRestController {
 
             result.correct = false;
             result.errorMessage = ex.getMessage();
-            result.ex = ex;
 
             return ResponseEntity.status(500).body(result);
         }

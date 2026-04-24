@@ -33,39 +33,29 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
         } catch (Exception ex) {
             result.correct = false;
             result.errorMessage = ex.getLocalizedMessage();
-            result.ex = ex;
         }
 
         return result;
     }
 
-    @Transactional
     @Override
     public Result UsuarioAdd(Usuario usuario) {
-
         Result result = new Result();
 
-        try {
-            Usuario usuarioJPA = new Usuario();
-            usuarioJPA.setNombre(usuario.getNombre());
-            usuarioJPA.setApellidoPaterno(usuario.getApellidoPaterno());
-            usuarioJPA.setApellidoMaterno(usuario.getApellidoMaterno());
-            usuarioJPA.setUserName(usuario.getUserName());
-            usuarioJPA.setCorreo(usuario.getCorreo());
-            usuarioJPA.setPassword(usuario.getPassword());
+        Usuario usuarioJPA = new Usuario();
+        usuarioJPA.setNombre(usuario.getNombre());
+        usuarioJPA.setApellidoPaterno(usuario.getApellidoPaterno());
+        usuarioJPA.setApellidoMaterno(usuario.getApellidoMaterno());
+        usuarioJPA.setUserName(usuario.getUserName());
+        usuarioJPA.setCorreo(usuario.getCorreo());
+        usuarioJPA.setPassword(usuario.getPassword());
 
-            Rol rolJPA = entityManager.getReference(Rol.class, usuario.getRol().getIdRol());
-            usuarioJPA.setRol(rolJPA);
+        Rol rolJPA = entityManager.getReference(Rol.class, usuario.getRol().getIdRol());
+        usuarioJPA.setRol(rolJPA);
 
-            entityManager.persist(usuarioJPA);
+        entityManager.persist(usuarioJPA);
 
-            result.correct = true;
-
-        } catch (Exception ex) {
-            result.correct = false;
-            result.errorMessage = ex.getLocalizedMessage();
-            result.ex = ex;
-        }
+        result.correct = true;
         return result;
 
     }
