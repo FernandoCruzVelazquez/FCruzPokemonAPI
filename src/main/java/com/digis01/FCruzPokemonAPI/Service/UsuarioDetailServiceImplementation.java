@@ -24,9 +24,9 @@ public class UsuarioDetailServiceImplementation implements UserDetailsService{
         if (result.correct) {
             Usuario usuario = (Usuario) result.object;
             
-            return User.withUsername(usuario.getUserName())
+            return User.withUsername(usuario.getUsername())
                     .password(usuario.getPassword())
-                    .authorities("ROLE_" + usuario.getRol().getNombreRol())
+                    .authorities("ROLE_" + usuario.getRol().getNombrerol())
                     .build();
         } else {
             throw new UsernameNotFoundException("No se encontró el usuario" + username);

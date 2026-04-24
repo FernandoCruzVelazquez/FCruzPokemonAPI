@@ -1,7 +1,6 @@
 
 package com.digis01.FCruzPokemonAPI.JPA;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,62 +13,55 @@ public class Usuario {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "IDUSUARIO")
     private int idusuario;
-    @Column(name = "NOMBREUSUARIO")
     private String nombreusuario;
-    @Column(name = "APELLIDOPATERNO")
     private String apellidopaterno;
-    @Column(name = "APELLIDOMATERNO")
     private String apellidomaterno;
-    @Column(name = "USERNAME")
-    private String userName;
-    @Column(name = "CORREO")
+    private String username;
     private String correo;
-    @Column(name = "PASSWORD")
-    private String Password;
+    private String password;
     @ManyToOne
-    @JoinColumn(name = "IDROL")
+    @JoinColumn(name = "idrol")
     public Rol rol;
-    
-    public int getIdUsuario(){
+
+    public int getIdusuario() {
         return idusuario;
     }
-    
-    public void setIdUsuario(int idusuario){
+
+    public void setIdusuario(int idusuario) {
         this.idusuario = idusuario;
     }
 
-    public String getNombre() {
+    public String getNombreusuario() {
         return nombreusuario;
     }
 
-    public void setNombre(String nombreusuario) {
+    public void setNombreusuario(String nombreusuario) {
         this.nombreusuario = nombreusuario;
     }
 
-    public String getApellidoPaterno() {
+    public String getApellidopaterno() {
         return apellidopaterno;
     }
 
-    public void setApellidoPaterno(String apellidopaterno) {
+    public void setApellidopaterno(String apellidopaterno) {
         this.apellidopaterno = apellidopaterno;
     }
 
-    public String getApellidoMaterno() {
+    public String getApellidomaterno() {
         return apellidomaterno;
     }
 
-    public void setApellidoMaterno(String apellidomaterno) {
+    public void setApellidomaterno(String apellidomaterno) {
         this.apellidomaterno = apellidomaterno;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getCorreo() {
@@ -81,11 +73,11 @@ public class Usuario {
     }
 
     public String getPassword() {
-        return Password;
+        return password;
     }
 
-    public void setPassword(String Password) {
-        this.Password = Password;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Rol getRol() {

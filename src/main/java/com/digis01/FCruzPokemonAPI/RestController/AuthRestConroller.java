@@ -30,13 +30,20 @@ public class AuthRestConroller {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
 
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.get("userName"),
-                loginRequest.get("Password")));
+        String username = loginRequest.get("username");
+        String password = loginRequest.get("password");
 
-        UserDetails user = usuarioDetailService.loadUserByUsername(loginRequest.get("userName"));
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password)
+        );
+
+        UserDetails user = usuarioDetailService.loadUserByUsername(username);
+
         String token = jwtService.generateToken(user);
+
         Map<String, Object> map = new HashMap<>();
         map.put("Key", token);
+
         return ResponseEntity.ok(map);
     }
 

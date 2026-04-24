@@ -11,25 +11,25 @@ public class Rol {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idrol")
-    private int idRol;
-    @Column(name = "nombrerol")
-    private String nombreRol;
+    private int idrol;
+    private String nombrerol;
 
-    public int getIdRol() {
-        return idRol;
+    public int getIdrol() {
+        return idrol;
     }
 
-    public void setIdRol(int idRol) {
-        this.idRol = idRol;
+    public void setIdrol(int idrol) {
+        this.idrol = idrol;
     }
 
-    public String getNombreRol() {
-        return nombreRol;
+    public String getNombrerol() {
+        return nombrerol;
     }
 
-    public void setNombreRol(String nombre) {
-        this.nombreRol = nombre;
+    public void setNombrerol(String nombrerol) {
+        this.nombrerol = nombrerol;
     }
+
+    
 
 }
