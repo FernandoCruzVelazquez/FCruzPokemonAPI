@@ -1,6 +1,7 @@
 package com.digis01.FCruzPokemonAPI.DAO;
 
 import com.digis01.FCruzPokemonAPI.JPA.Favorito;
+import com.digis01.FCruzPokemonAPI.JPA.Pokemon;
 import com.digis01.FCruzPokemonAPI.JPA.Result;
 import com.digis01.FCruzPokemonAPI.JPA.Rol;
 import com.digis01.FCruzPokemonAPI.JPA.Usuario;
@@ -78,7 +79,8 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
             Usuario usuarioJPA = entityManager.getReference(Usuario.class, favorito.getUsuario().getIdusuario());
             favoritoJPA.setUsuario(usuarioJPA);
             
-            
+            Pokemon pokemonJPA = entityManager.getReference(Pokemon.class, favorito.getPokemon().getIdPokemon());
+            favoritoJPA.setPokemon(pokemonJPA);
             
         } catch (Exception ex) {
             result.correct = false;

@@ -1,8 +1,16 @@
 
 package com.digis01.FCruzPokemonAPI.JPA;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
 public class Pokemon {
     
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idPokemon;
     private String nombrePokemon;
     private double altura;
@@ -18,12 +26,12 @@ public class Pokemon {
         this.idPokemon = idPokemon;
     }
 
-    public String getNombre() {
+    public String getNombrePokemon() {
         return nombrePokemon;
     }
 
-    public void setNombre(String nombre) {
-        this.nombrePokemon = nombre;
+    public void setNombrePokemon(String nombrePokemon) {
+        this.nombrePokemon = nombrePokemon;
     }
 
     public double getAltura() {
@@ -57,7 +65,7 @@ public class Pokemon {
     public void setImagen(String imagen) {
         this.imagen = imagen;
     }
-    
+
     
     
 }
