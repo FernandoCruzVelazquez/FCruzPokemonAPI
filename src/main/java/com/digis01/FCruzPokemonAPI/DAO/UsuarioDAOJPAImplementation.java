@@ -8,6 +8,8 @@ import com.digis01.FCruzPokemonAPI.JPA.Usuario;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
@@ -69,24 +71,142 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
 
     @Override
     public Result Favorito(Favorito favorito) {
-        
+
         Result result = new Result();
-        
+
         try {
-            
+
             Favorito favoritoJPA = new Favorito();
-            
-            Usuario usuarioJPA = entityManager.getReference(Usuario.class, favorito.getUsuario().getIdusuario());
-            favoritoJPA.setUsuario(usuarioJPA);
-            
-            Pokemon pokemonJPA = entityManager.getReference(Pokemon.class, favorito.getPokemon().getIdPokemon());
-            favoritoJPA.setPokemon(pokemonJPA);
-            
+
+            Usuario usuario = entityManager.find(Usuario.class, favorito.getUsuario().getIdusuario());
+            if (usuario == null) {
+                throw new RuntimeException("Usuario no existe");
+            }
+
+            Pokemon pokemon = entityManager.find(Pokemon.class, favorito.getPokemon().getIdpokemon());
+            if (pokemon == null) {
+                throw new RuntimeException("Pokemon no existe");
+            }
+
+            favoritoJPA.setUsuario(usuario);
+            favoritoJPA.setPokemon(pokemon);
+
+            entityManager.persist(favoritoJPA);
+
+            result.correct = true;
+
         } catch (Exception ex) {
             result.correct = false;
             result.errorMessage = ex.getLocalizedMessage();
         }
         return result;
+    }
+
+    @Override
+    public Result UsuarioUpdate(Usuario usuario) {
+
+        Result result = new Result();
+
+        try {
+
+            Usuario usuarioJPA = entityManager.find(Usuario.class, usuario.getIdusuario());
+
+            if (usuarioJPA != null) {
+                usuarioJPA.setNombreusuario(usuario.getNombreusuario());
+                usuarioJPA.setApellidopaterno(usuario.getApellidopaterno());
+                usuarioJPA.setApellidomaterno(usuario.getApellidomaterno());
+                usuarioJPA.setUsername(usuario.getCorreo());
+                usuarioJPA.setCorreo(usuario.getCorreo());
+                usuarioJPA.setPassword(usuario.getPassword());
+
+                Rol rolJPA = entityManager.find(Rol.class, usuario.getRol().getIdrol());
+                usuarioJPA.setRol(rolJPA);
+
+                result.correct = true;
+            } else {
+                result.correct = false;
+                return result;
+            }
+
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+        }
+
+        return result;
+
+    }
+
+    @Override
+    public Result UsuarioDelete(Usuario usuario) {
+
+        Result result = new Result();
+
+        try {
+
+            Usuario usuarioJPA = entityManager.find(Usuario.class, usuario.getIdusuario());
+
+            if (usuarioJPA == null) {
+                result.correct = false;
+                return result;
+            }
+
+            entityManager.remove(usuarioJPA);
+            result.correct = true;
+
+        } catch (Exception ex) {
+            result.correct = true;
+            result.errorMessage = ex.getLocalizedMessage();
+        }
+
+        return result;
+
+    }
+
+    @Override
+    public Result UsuarioGetAll() {
+
+        Result result = new Result();
+
+        try {
+
+            TypedQuery<Usuario> queryUsuario = entityManager.createQuery("FROM Usuario", Usuario.class);
+            List<Usuario> usuarios = queryUsuario.getResultList();
+
+            result.objects = new ArrayList<>();
+            result.objects.addAll(usuarios);
+
+            result.correct = true;
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+        }
+        return result;
+    }
+
+    @Override
+    public Result UsuarioGetById(int idUsuario) {
+        
+        Result result = new Result();
+        
+        try {
+            
+            Usuario usuario = entityManager.find(Usuario.class, idUsuario);
+            
+            if (usuario != null) {
+                result.object = usuario;
+                result.correct = true;
+            } else {
+                result.correct = false;
+            }
+            
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+        }
+        
+        return result;
+        
     }
 
 }

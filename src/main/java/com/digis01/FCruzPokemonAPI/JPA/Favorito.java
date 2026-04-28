@@ -12,7 +12,7 @@ public class Favorito {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idFavorito;
+    private int idfavoritos;
     @ManyToOne
     @JoinColumn(name = "idpokemon")
     public Pokemon pokemon;
@@ -20,12 +20,12 @@ public class Favorito {
     @JoinColumn(name = "idusuario")
     public Usuario usuario;
 
-    public int getIdFavorito() {
-        return idFavorito;
+    public int getIdfavoritos() {
+        return idfavoritos;
     }
 
-    public void setIdFavorito(int idFavorito) {
-        this.idFavorito = idFavorito;
+    public void setIdfavoritos(int idfavoritos) {
+        this.idfavoritos = idfavoritos;
     }
 
     public Pokemon getPokemon() {
@@ -43,5 +43,7 @@ public class Favorito {
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
+
+
 
 }
