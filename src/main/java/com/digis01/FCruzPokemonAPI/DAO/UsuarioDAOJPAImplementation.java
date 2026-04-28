@@ -68,40 +68,7 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
         return result;
 
     }
-
-    @Override
-    public Result Favorito(Favorito favorito) {
-
-        Result result = new Result();
-
-        try {
-
-            Favorito favoritoJPA = new Favorito();
-
-            Usuario usuario = entityManager.find(Usuario.class, favorito.getUsuario().getIdusuario());
-            if (usuario == null) {
-                throw new RuntimeException("Usuario no existe");
-            }
-
-            Pokemon pokemon = entityManager.find(Pokemon.class, favorito.getPokemon().getIdpokemon());
-            if (pokemon == null) {
-                throw new RuntimeException("Pokemon no existe");
-            }
-
-            favoritoJPA.setUsuario(usuario);
-            favoritoJPA.setPokemon(pokemon);
-
-            entityManager.persist(favoritoJPA);
-
-            result.correct = true;
-
-        } catch (Exception ex) {
-            result.correct = false;
-            result.errorMessage = ex.getLocalizedMessage();
-        }
-        return result;
-    }
-
+    
     @Override
     public Result UsuarioUpdate(Usuario usuario) {
 

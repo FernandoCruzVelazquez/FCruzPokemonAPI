@@ -1,5 +1,6 @@
 package com.digis01.FCruzPokemonAPI.RestController;
 
+import com.digis01.FCruzPokemonAPI.DAO.FavoritoDAOJPAImplementation;
 import com.digis01.FCruzPokemonAPI.DAO.UsuarioDAOJPAImplementation;
 import com.digis01.FCruzPokemonAPI.JPA.Favorito;
 import com.digis01.FCruzPokemonAPI.JPA.Result;
@@ -21,6 +22,9 @@ public class UsuarioRestController {
 
     @Autowired
     private UsuarioDAOJPAImplementation usuarioDAOJPAImplementation;
+    
+    @Autowired
+    private FavoritoDAOJPAImplementation favoritoDAOJPAImplementation;
 
     @PostMapping
     public ResponseEntity<Result> UsuarioDireccionAdd(@RequestBody Usuario usuario) {
@@ -54,7 +58,7 @@ public class UsuarioRestController {
         
         try {
             
-            result = usuarioDAOJPAImplementation.Favorito(favorito);
+            result = favoritoDAOJPAImplementation.Favorito(favorito);
             
             if (result.correct) {
                 return ResponseEntity.ok(result);
