@@ -20,6 +20,7 @@ public class Usuario {
     private String username;
     private String correo;
     private String password;
+    private String imagen;
     @ManyToOne
     @JoinColumn(name = "idrol")
     public Rol rol;
@@ -88,6 +89,12 @@ public class Usuario {
         this.rol = rol;
     }
     
+    public String getImagen(){
+        return imagen;
+    }
     
+    public void setImagen(String imagen){
+        this.imagen = imagen;
+    }
     
 }

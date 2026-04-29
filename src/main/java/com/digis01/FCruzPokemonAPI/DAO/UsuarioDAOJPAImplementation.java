@@ -57,6 +57,7 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
         usuarioJPA.setPassword(
                 passwordEncoder.encode(usuario.getPassword())
         );
+        usuarioJPA.setImagen(usuario.getImagen());
 
         Rol rolJPA = entityManager.getReference(Rol.class, usuario.getRol().getIdrol());
         usuarioJPA.setRol(rolJPA);
