@@ -41,7 +41,6 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
             result.correct = false;
             result.errorMessage = ex.getLocalizedMessage();
         }
-
         return result;
     }
 
@@ -66,9 +65,8 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
 
         result.correct = true;
         return result;
-
     }
-    
+
     @Override
     public Result UsuarioUpdate(Usuario usuario) {
 
@@ -84,7 +82,9 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
                 usuarioJPA.setApellidomaterno(usuario.getApellidomaterno());
                 usuarioJPA.setUsername(usuario.getCorreo());
                 usuarioJPA.setCorreo(usuario.getCorreo());
-                usuarioJPA.setPassword(usuario.getPassword());
+                usuarioJPA.setPassword(
+                        passwordEncoder.encode(usuario.getPassword())
+                );
 
                 Rol rolJPA = entityManager.find(Rol.class, usuario.getRol().getIdrol());
                 usuarioJPA.setRol(rolJPA);
@@ -99,9 +99,7 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
             result.correct = false;
             result.errorMessage = ex.getLocalizedMessage();
         }
-
         return result;
-
     }
 
     @Override
@@ -125,9 +123,7 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
             result.correct = true;
             result.errorMessage = ex.getLocalizedMessage();
         }
-
         return result;
-
     }
 
     @Override
@@ -153,27 +149,25 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
 
     @Override
     public Result UsuarioGetById(int idUsuario) {
-        
+
         Result result = new Result();
-        
+
         try {
-            
+
             Usuario usuario = entityManager.find(Usuario.class, idUsuario);
-            
+
             if (usuario != null) {
                 result.object = usuario;
                 result.correct = true;
             } else {
                 result.correct = false;
             }
-            
+
         } catch (Exception ex) {
             result.correct = false;
             result.errorMessage = ex.getLocalizedMessage();
         }
-        
         return result;
-        
     }
 
 }

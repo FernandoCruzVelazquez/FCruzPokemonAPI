@@ -42,13 +42,10 @@ public class UsuarioRestController {
             }
 
         } catch (Exception ex) {
-
             result.correct = false;
             result.errorMessage = ex.getMessage();
-
             return ResponseEntity.status(500).body(result);
         }
-
     }
     
     @PostMapping("/favorito")
@@ -70,11 +67,9 @@ public class UsuarioRestController {
             
             result.correct = false;
             result.errorMessage = ex.getLocalizedMessage();
-            
             return ResponseEntity.status(500).body(result);
             
         }
-        
     }
     
     @PutMapping("/update")
@@ -94,7 +89,6 @@ public class UsuarioRestController {
         } catch (Exception ex) {
             result.correct = false;
             result.errorMessage = ex.getLocalizedMessage();
-            
             return ResponseEntity.status(500).body(result);
         }
     }
@@ -118,7 +112,6 @@ public class UsuarioRestController {
         } catch (Exception ex) {
             return ResponseEntity.status(500).body(ex.getLocalizedMessage());
         }
-        
     }
     
     @GetMapping("/usuarios")
@@ -162,7 +155,6 @@ public class UsuarioRestController {
         } catch (Exception ex) {
             return ResponseEntity.status(500).body(ex);
         }
-        
     }
 
 }
