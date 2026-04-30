@@ -1,6 +1,8 @@
 package com.digis01.FCruzPokemonAPI.JPA;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,10 +15,10 @@ public class Favorito {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idfavoritos;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idpokemon")
     public Pokemon pokemon;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idusuario")
     public Usuario usuario;
 

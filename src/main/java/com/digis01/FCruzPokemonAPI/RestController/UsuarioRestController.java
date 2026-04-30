@@ -2,7 +2,6 @@ package com.digis01.FCruzPokemonAPI.RestController;
 
 import com.digis01.FCruzPokemonAPI.DAO.FavoritoDAOJPAImplementation;
 import com.digis01.FCruzPokemonAPI.DAO.UsuarioDAOJPAImplementation;
-import com.digis01.FCruzPokemonAPI.JPA.Favorito;
 import com.digis01.FCruzPokemonAPI.JPA.Result;
 import com.digis01.FCruzPokemonAPI.JPA.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,30 +44,6 @@ public class UsuarioRestController {
             result.correct = false;
             result.errorMessage = ex.getMessage();
             return ResponseEntity.status(500).body(result);
-        }
-    }
-    
-    @PostMapping("/favorito")
-    public ResponseEntity<Result> FavoritoAdd(@RequestBody Favorito favorito){
-        
-        Result result = new Result();
-        
-        try {
-            
-            result = favoritoDAOJPAImplementation.Favorito(favorito);
-            
-            if (result.correct) {
-                return ResponseEntity.ok(result);
-            } else {
-                return ResponseEntity.badRequest().body(result);
-            }
-            
-        } catch (Exception ex) {
-            
-            result.correct = false;
-            result.errorMessage = ex.getLocalizedMessage();
-            return ResponseEntity.status(500).body(result);
-            
         }
     }
     

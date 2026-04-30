@@ -16,80 +16,19 @@ public class PokemonDAOJPAImplementation implements IPokemon {
 
     @Override
     public Result PokemonAdd(Pokemon pokemon) {
-
         Result result = new Result();
-
         try {
 
-            Pokemon pokemonJPA = new Pokemon();
+            entityManager.persist(pokemon);
 
-            pokemonJPA.setNombrepokemon(pokemon.getNombrepokemon());
-            pokemonJPA.setAltura(pokemon.getAltura());
-            pokemonJPA.setPeso(pokemon.getPeso());
-            pokemonJPA.setExperienciabase(pokemon.getExperienciabase());
-            pokemonJPA.setImagen(pokemon.getImagen());
-
-            entityManager.persist(pokemonJPA);
             result.correct = true;
 
         } catch (Exception ex) {
-            result.correct = false;
-            result.errorMessage = ex.getLocalizedMessage();
-        }
-        return result;
-    }
 
-    @Override
-    public Result PokemonUpdate(Pokemon pokemon) {
-
-        Result result = new Result();
-
-        try {
-
-            Pokemon pokemonJPA = entityManager.find(Pokemon.class, pokemon.getIdpokemon());
-
-            if (pokemonJPA != null) {
-                pokemonJPA.setNombrepokemon(pokemon.getNombrepokemon());
-                pokemonJPA.setAltura(pokemon.getAltura());
-                pokemonJPA.setPeso(pokemon.getPeso());
-                pokemonJPA.setExperienciabase(pokemon.getExperienciabase());
-                pokemonJPA.setImagen(pokemon.getImagen());
-
-                result.correct = true;
-            } else {
-                result.correct = false;
-                return result;
-            }
-
-        } catch (Exception ex) {
-            result.correct = false;
-            result.errorMessage = ex.getLocalizedMessage();
-        }
-        return result;
-    }
-
-    @Override
-    public Result PokemonDelete(Pokemon pokemon) {
-
-        Result result = new Result();
-
-        try {
-
-            Pokemon pokemonJPA = entityManager.find(Pokemon.class, pokemon.getIdpokemon());
-
-            if (pokemonJPA == null) {
-                result.correct = false;
-                return result;
-            }
-
-            entityManager.remove(pokemonJPA);
+            // Si ya existe, lo ignoramos
             result.correct = true;
 
-        } catch (Exception ex) {
-            result.correct = false;
-            result.errorMessage = ex.getLocalizedMessage();
         }
         return result;
     }
-
 }

@@ -6,38 +6,43 @@ import com.digis01.FCruzPokemonAPI.JPA.Result;
 import com.digis01.FCruzPokemonAPI.JPA.Usuario;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @Transactional
 public class FavoritoDAOJPAImplementation implements IFavorito {
-    
+
     @Autowired
     private EntityManager entityManager;
 
     @Override
-    public Result Favorito(Favorito favorito) {
+    public Result FavoritoAdd(int idUsuario, int idPokemon, String nombre, String imagen) {
+
         Result result = new Result();
 
         try {
 
-            Favorito favoritoJPA = new Favorito();
+            Usuario usuario = entityManager.find(Usuario.class, idUsuario);
 
-            Usuario usuario = entityManager.find(Usuario.class, favorito.getUsuario().getIdusuario());
-            if (usuario == null) {
-                throw new RuntimeException("Usuario no existe");
-            }
+            Pokemon pokemon = entityManager.find(Pokemon.class, idPokemon);
 
-            Pokemon pokemon = entityManager.find(Pokemon.class, favorito.getPokemon().getIdpokemon());
             if (pokemon == null) {
-                throw new RuntimeException("Pokemon no existe");
+                pokemon = new Pokemon();
+                pokemon.setIdpokemon(idPokemon);
+                pokemon.setNombrepokemon(nombre);
+                pokemon.setImagen(imagen);
+
+                entityManager.persist(pokemon);
             }
 
-            favoritoJPA.setUsuario(usuario);
-            favoritoJPA.setPokemon(pokemon);
+            Favorito favorito = new Favorito();
+            favorito.setUsuario(usuario);
+            favorito.setPokemon(pokemon);
 
-            entityManager.persist(favoritoJPA);
+            entityManager.persist(favorito);
 
             result.correct = true;
 
@@ -45,30 +50,53 @@ public class FavoritoDAOJPAImplementation implements IFavorito {
             result.correct = false;
             result.errorMessage = ex.getLocalizedMessage();
         }
+
         return result;
     }
 
     @Override
-    public Result FavoritoDelete(Favorito favorito) {
+    public Result FavoritoDelete(int idFavorito) {
+
         Result result = new Result();
-        
+
         try {
-            
-            Favorito favoritoJPA = entityManager.find(Favorito.class, favorito.getIdfavoritos());
-            
-            if (favoritoJPA == null) {
+
+            Favorito favorito = entityManager.find(Favorito.class, idFavorito);
+            if (favorito != null) {
+                entityManager.remove(favorito);
+                result.correct = true;
+            } else {
                 result.correct = false;
-                return result;
+                result.errorMessage = "El pokemon favorito no existe";
             }
-            
-            entityManager.remove(favoritoJPA);
-            result.correct = true;
-            
+
         } catch (Exception ex) {
             result.correct = false;
             result.errorMessage = ex.getLocalizedMessage();
         }
-        
+
+        return result;
+    }
+
+    @Override
+    public Result GetMisFavoritos(String username) {
+
+        Result result = new Result();
+
+        try {
+
+            String consulta = "FROM Favorito f WHERE f.usuario.username = :user";
+            List<Favorito> lista = entityManager.createQuery(consulta, Favorito.class).setParameter("user", username).getResultList();
+
+            result.objects = new ArrayList<>(lista);
+
+            result.correct = true;
+
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+        }
+
         return result;
     }
 

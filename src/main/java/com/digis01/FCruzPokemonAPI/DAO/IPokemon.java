@@ -7,7 +7,5 @@ import com.digis01.FCruzPokemonAPI.JPA.Result;
 public interface IPokemon {
     
     Result PokemonAdd(Pokemon pokemon);
-    Result PokemonUpdate(Pokemon pokemon);
-    Result PokemonDelete(Pokemon pokemon);
     
 }
