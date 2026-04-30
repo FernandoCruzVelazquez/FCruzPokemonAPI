@@ -5,8 +5,12 @@ import com.digis01.FCruzPokemonAPI.DAO.UsuarioDAOJPAImplementation;
 import com.digis01.FCruzPokemonAPI.JPA.Favorito;
 import com.digis01.FCruzPokemonAPI.JPA.Result;
 import com.digis01.FCruzPokemonAPI.JPA.Usuario;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,12 +23,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("api/usuario")
 public class UsuarioRestController {
+    
+    @Autowired
+    private JavaMailSender mailSender; //Motor de correos
 
     @Autowired
     private UsuarioDAOJPAImplementation usuarioDAOJPAImplementation;
     
     @Autowired
     private FavoritoDAOJPAImplementation favoritoDAOJPAImplementation;
+    
+    private static final ConcurrentHashMap<String, String> memoryCodes = new ConcurrentHashMap<>(); //Guarda codigo
 
     @PostMapping
     public ResponseEntity<Result> UsuarioDireccionAdd(@RequestBody Usuario usuario) {
@@ -155,6 +164,54 @@ public class UsuarioRestController {
         } catch (Exception ex) {
             return ResponseEntity.status(500).body(ex);
         }
+    }
+    
+    @PostMapping("/enviar-validacion/{correo}")
+    public ResponseEntity<Result> enviarCodigo(@PathVariable String correo) {
+        Result result = new Result();
+        try {
+            String codigo = String.valueOf((int)(Math.random() * 900000) + 100000);
+            memoryCodes.put(correo, codigo);
+
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(correo);
+            message.setSubject("Verificación de cuenta - PokeAPI");
+            message.setText("¡Hola! Tu código de confirmación es: " + codigo + 
+                           "\nPor favor, ingresalo en la aplicación para activar tu cuenta.");
+
+            mailSender.send(message);
+
+            result.correct = true;
+            result.object = "Código enviado a " + correo;
+            return ResponseEntity.ok(result);
+            
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = "Error al enviar correo: " + ex.getMessage();
+            return ResponseEntity.status(500).body(result);
+        }
+    }
+
+    @PostMapping("/confirmar-codigo")
+    public ResponseEntity<Result> confirmarCodigo(@RequestBody Map<String, String> datos) {
+        String correo = datos.get("correo");
+        String codigoUsuario = datos.get("codigo");
+        Result result = new Result();
+
+        if (memoryCodes.containsKey(correo) && memoryCodes.get(correo).equals(codigoUsuario)) {
+            
+            result = usuarioDAOJPAImplementation.ActivarUsuario(correo);
+            
+            if (result.correct) {
+                memoryCodes.remove(correo); 
+                result.object = "¡Cuenta activada con éxito!";
+                return ResponseEntity.ok(result);
+            }
+        }
+        
+        result.correct = false;
+        result.errorMessage = "El código es incorrecto o ya expiró.";
+        return ResponseEntity.badRequest().body(result);
     }
 
 }
