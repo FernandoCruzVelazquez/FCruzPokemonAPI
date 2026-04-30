@@ -1,4 +1,3 @@
-
 package com.digis01.FCruzPokemonAPI.JPA;
 
 import jakarta.persistence.Entity;
@@ -10,7 +9,7 @@ import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Usuario {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idusuario;
@@ -21,6 +20,7 @@ public class Usuario {
     private String correo;
     private String password;
     private String imagen;
+    private int estado;
     @ManyToOne
     @JoinColumn(name = "idrol")
     public Rol rol;
@@ -88,13 +88,21 @@ public class Usuario {
     public void setRol(Rol rol) {
         this.rol = rol;
     }
-    
-    public String getImagen(){
+
+    public String getImagen() {
         return imagen;
     }
-    
-    public void setImagen(String imagen){
+
+    public void setImagen(String imagen) {
         this.imagen = imagen;
     }
-    
+
+    public int getEstado() {
+        return estado;
+    }
+
+    public void setEstado(int estado) {
+        this.estado = estado;
+    }
+
 }

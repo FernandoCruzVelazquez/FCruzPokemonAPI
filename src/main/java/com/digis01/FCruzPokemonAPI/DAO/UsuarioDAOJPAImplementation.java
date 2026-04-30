@@ -169,4 +169,30 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
         return result;
     }
 
+    @Override
+    public Result ActivarUsuario(String correo) {
+        
+        Result result = new Result();
+        
+        try {
+            
+            TypedQuery<Usuario> query = entityManager.createQuery("FROM Usuario WHERE correo = :correo", Usuario.class);
+            query.setParameter("correo", correo);
+            Usuario usuario = query.getSingleResult();
+            
+            if (usuario != null) {
+                usuario. setEstado(1);
+                entityManager.merge(usuario);
+                result.correct = true;
+            }
+            
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+        }
+        
+        return result;
+        
+    }
+
 }

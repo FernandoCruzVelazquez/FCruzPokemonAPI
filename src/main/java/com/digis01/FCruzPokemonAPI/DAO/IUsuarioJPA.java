@@ -12,5 +12,6 @@ public interface IUsuarioJPA {
     Result UsuarioUpdate(Usuario usuario);
     Result UsuarioDelete(Usuario usuario);
     Result GetByUserName(String userName);
+    Result ActivarUsuario(String correo);
     
 }
