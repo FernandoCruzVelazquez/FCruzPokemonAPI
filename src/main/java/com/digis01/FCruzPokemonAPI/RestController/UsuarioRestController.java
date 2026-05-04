@@ -31,7 +31,7 @@ public class UsuarioRestController {
     private static final ConcurrentHashMap<String, String> memoryCodes = new ConcurrentHashMap<>();
 
     @PostMapping
-    public ResponseEntity<Result> UsuarioDireccionAdd(@RequestBody Usuario usuario) {
+    public ResponseEntity<Result> UsuarioAdd(@RequestBody Usuario usuario) {
 
         Result result = new Result();
 

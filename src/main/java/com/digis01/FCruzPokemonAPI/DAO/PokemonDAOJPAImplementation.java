@@ -19,16 +19,15 @@ public class PokemonDAOJPAImplementation implements IPokemon {
         Result result = new Result();
         try {
 
-            entityManager.persist(pokemon);
+            entityManager.merge(pokemon);
 
             result.correct = true;
 
         } catch (Exception ex) {
-
-            // Si ya existe, lo ignoramos
-            result.correct = true;
-
+            result.correct = false;
+            result.errorMessage = ex.getMessage();
         }
+
         return result;
     }
 }

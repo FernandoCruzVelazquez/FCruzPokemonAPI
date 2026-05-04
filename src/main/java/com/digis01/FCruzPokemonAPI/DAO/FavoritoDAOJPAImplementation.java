@@ -25,8 +25,29 @@ public class FavoritoDAOJPAImplementation implements IFavorito {
 
         try {
 
+            // 1. Validar usuario
             Usuario usuario = entityManager.find(Usuario.class, idUsuario);
+            if (usuario == null) {
+                result.correct = false;
+                result.errorMessage = "Usuario no encontrado";
+                return result;
+            }
 
+            // 2. Validar si ya existe el favorito (evitar duplicados)
+            String jpql = "SELECT COUNT(f) FROM Favorito f WHERE f.usuario.idusuario = :uid AND f.pokemon.idpokemon = :pid";
+
+            Long count = entityManager.createQuery(jpql, Long.class)
+                    .setParameter("uid", idUsuario)
+                    .setParameter("pid", idPokemon)
+                    .getSingleResult();
+
+            if (count > 0) {
+                result.correct = true;
+                result.errorMessage = "El Pokémon ya está en favoritos";
+                return result;
+            }
+
+            // 3. Buscar o crear el Pokémon (cache)
             Pokemon pokemon = entityManager.find(Pokemon.class, idPokemon);
 
             if (pokemon == null) {
@@ -38,6 +59,7 @@ public class FavoritoDAOJPAImplementation implements IFavorito {
                 entityManager.persist(pokemon);
             }
 
+            // 4. Crear favorito
             Favorito favorito = new Favorito();
             favorito.setUsuario(usuario);
             favorito.setPokemon(pokemon);
@@ -48,31 +70,36 @@ public class FavoritoDAOJPAImplementation implements IFavorito {
 
         } catch (Exception ex) {
             result.correct = false;
-            result.errorMessage = ex.getLocalizedMessage();
+            result.errorMessage = ex.getMessage(); // mejor que localized
         }
 
         return result;
     }
 
     @Override
-    public Result FavoritoDelete(int idFavorito) {
+    public Result FavoritoDelete(int idUsuario, int idPokemon) {
 
         Result result = new Result();
 
         try {
 
-            Favorito favorito = entityManager.find(Favorito.class, idFavorito);
-            if (favorito != null) {
-                entityManager.remove(favorito);
+            String jpql = "DELETE FROM Favorito f WHERE f.usuario.idusuario = :uid AND f.pokemon.idpokemon = :pid";
+
+            int rows = entityManager.createQuery(jpql)
+                    .setParameter("uid", idUsuario)
+                    .setParameter("pid", idPokemon)
+                    .executeUpdate();
+
+            if (rows > 0) {
                 result.correct = true;
             } else {
                 result.correct = false;
-                result.errorMessage = "El pokemon favorito no existe";
+                result.errorMessage = "El favorito no existe";
             }
 
         } catch (Exception ex) {
             result.correct = false;
-            result.errorMessage = ex.getLocalizedMessage();
+            result.errorMessage = ex.getMessage();
         }
 
         return result;
@@ -85,16 +112,22 @@ public class FavoritoDAOJPAImplementation implements IFavorito {
 
         try {
 
-            String consulta = "FROM Favorito f WHERE f.usuario.username = :user";
-            List<Favorito> lista = entityManager.createQuery(consulta, Favorito.class).setParameter("user", username).getResultList();
+            String consulta = "SELECT f FROM Favorito f\n"
+                    + "JOIN FETCH f.pokemon\n"
+                    + "JOIN FETCH f.usuario\n"
+                    + "WHERE LOWER(f.usuario.username) = LOWER(:user)";
+
+            List<Favorito> lista = entityManager
+                    .createQuery(consulta, Favorito.class)
+                    .setParameter("user", username)
+                    .getResultList();
 
             result.objects = new ArrayList<>(lista);
-
             result.correct = true;
 
         } catch (Exception ex) {
             result.correct = false;
-            result.errorMessage = ex.getLocalizedMessage();
+            result.errorMessage = ex.getMessage();
         }
 
         return result;

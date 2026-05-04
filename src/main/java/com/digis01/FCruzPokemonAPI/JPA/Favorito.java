@@ -20,6 +20,7 @@ public class Favorito {
     public Pokemon pokemon;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idusuario")
+    @JsonIgnore
     public Usuario usuario;
 
     public int getIdfavoritos() {
@@ -45,7 +46,5 @@ public class Favorito {
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
-
-
 
 }

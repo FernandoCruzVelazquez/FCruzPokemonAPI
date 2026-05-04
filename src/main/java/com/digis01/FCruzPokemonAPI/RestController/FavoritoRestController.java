@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -23,37 +24,37 @@ public class FavoritoRestController {
     @PostMapping
     public ResponseEntity<Result> FavoritoAdd(@RequestBody FavoritoDTO dto) {
 
-        Result result = new Result();
-
         try {
 
-            result = favoritoDAOJPAImplementation.FavoritoAdd(
+            Result result = favoritoDAOJPAImplementation.FavoritoAdd(
                     dto.idUsuario,
                     dto.idPokemon,
                     dto.nombre,
                     dto.imagen
             );
 
-            if (result.correct) {
-                return ResponseEntity.ok(result);
-            } else {
-                return ResponseEntity.badRequest().body(result);
-            }
+            return result.correct
+                    ? ResponseEntity.ok(result)
+                    : ResponseEntity.badRequest().body(result);
 
         } catch (Exception ex) {
+            Result result = new Result();
             result.correct = false;
-            result.errorMessage = ex.getLocalizedMessage();
+            result.errorMessage = ex.getMessage();
             return ResponseEntity.status(500).body(result);
         }
     }
 
-    @DeleteMapping("/{idFavorito}")
-    public ResponseEntity<Result> FavoritoDelete(@PathVariable int idFavorito) {
+    @DeleteMapping
+    public ResponseEntity<Result> FavoritoDelete(
+            @RequestParam int idUsuario,
+            @RequestParam int idPokemon) {
 
-        Result result = new Result();
+        Result result;
 
         try {
-            result = favoritoDAOJPAImplementation.FavoritoDelete(idFavorito);
+
+            result = favoritoDAOJPAImplementation.FavoritoDelete(idUsuario, idPokemon);
 
             if (result.correct) {
                 return ResponseEntity.ok(result);
@@ -62,30 +63,31 @@ public class FavoritoRestController {
             }
 
         } catch (Exception ex) {
+            result = new Result();
             result.correct = false;
-            result.errorMessage = ex.getLocalizedMessage();
-            return ResponseEntity.badRequest().body(result);
+            result.errorMessage = ex.getMessage();
+            return ResponseEntity.status(500).body(result);
         }
-
     }
 
     @GetMapping("/{username}")
     public ResponseEntity<Result> GetMisFavoritos(@PathVariable String username) {
-        Result result = new Result();
+
+        Result result;
 
         try {
-
             result = favoritoDAOJPAImplementation.GetMisFavoritos(username);
 
-            if (result.correct) {
-                return ResponseEntity.ok(result);
-            } else {
-                return ResponseEntity.status(404).body(result);
-            }
+            return result.correct
+                    ? ResponseEntity.ok(result)
+                    : ResponseEntity.badRequest().body(result);
 
         } catch (Exception ex) {
+
+            result = new Result();
             result.correct = false;
-            result.errorMessage = ex.getLocalizedMessage();
+            result.errorMessage = ex.getMessage();
+
             return ResponseEntity.status(500).body(result);
         }
     }
