@@ -2,6 +2,7 @@ package com.digis01.FCruzPokemonAPI.RestController;
 
 import com.digis01.FCruzPokemonAPI.Service.JwtService;
 import com.digis01.FCruzPokemonAPI.Service.UsuarioDetailServiceImplementation;
+import com.digis01.FCruzPokemonAPI.JPA.Usuario;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,14 +38,17 @@ public class AuthRestController {
                 new UsernamePasswordAuthenticationToken(username, password)
         );
 
-        UserDetails user = usuarioDetailService.loadUserByUsername(username);
+        UserDetails userDetails = usuarioDetailService.loadUserByUsername(username);
+        String token = jwtService.generateToken(userDetails);
+        Usuario usuario = usuarioDetailService.getUsuarioByUsername(username);
 
-        String token = jwtService.generateToken(user);
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", token);
+        response.put("username", usuario.getUsername());
+        response.put("idusuario", usuario.getIdusuario()); 
+        response.put("nombreCompleto", usuario.getNombreusuario());
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("Key", token);
-
-        return ResponseEntity.ok(map);
+        return ResponseEntity.ok(response);
     }
 
 }

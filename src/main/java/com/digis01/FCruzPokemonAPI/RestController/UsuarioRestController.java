@@ -125,7 +125,7 @@ public class UsuarioRestController {
 
             if (result.correct) {
                 if (result.object != null) {
-                    return ResponseEntity.ok(result.object);
+                    return ResponseEntity.ok(result);
                 } else {
                     return ResponseEntity.noContent().build();
                 }
@@ -185,6 +185,30 @@ public class UsuarioRestController {
         result.correct = false;
         result.errorMessage = "El código es incorrecto o ya expiró";
         return ResponseEntity.badRequest().body(result);
+    }
+
+    @PostMapping("/bienvenida/{correo}")
+    public ResponseEntity<Result> enviarBienvenida(@PathVariable String correo) {
+        Result result = new Result();
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(correo);
+            message.setSubject("¡Bienvenido Entrenador! - PokeAPI - F&F");
+            message.setText("¡Hola!\n\nTu cuenta en PokeAPI - F&F se ha creado con éxito. "
+                    + "Estamos felices de tenerte en nuestra comunidad.\n"
+                    + "¡Prepárate para tu aventura Pokémon!");
+
+            mailSender.send(message);
+
+            result.correct = true;
+            result.object = "Correo de bienvenida enviado a " + correo;
+            return ResponseEntity.ok(result);
+
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = "Error al enviar bienvenida: " + ex.getMessage();
+            return ResponseEntity.status(500).body(result);
+        }
     }
 
 }

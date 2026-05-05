@@ -79,7 +79,7 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
                 usuarioJPA.setNombreusuario(usuario.getNombreusuario());
                 usuarioJPA.setApellidopaterno(usuario.getApellidopaterno());
                 usuarioJPA.setApellidomaterno(usuario.getApellidomaterno());
-                usuarioJPA.setUsername(usuario.getCorreo());
+                usuarioJPA.setUsername(usuario.getUsername());
                 usuarioJPA.setCorreo(usuario.getCorreo());
                 usuarioJPA.setPassword(
                         passwordEncoder.encode(usuario.getPassword())
