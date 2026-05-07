@@ -68,32 +68,30 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
 
     @Override
     public Result UsuarioUpdate(Usuario usuario) {
-
+ 
         Result result = new Result();
-
+ 
         try {
-
+ 
             Usuario usuarioJPA = entityManager.find(Usuario.class, usuario.getIdusuario());
-
+ 
             if (usuarioJPA != null) {
                 usuarioJPA.setNombreusuario(usuario.getNombreusuario());
                 usuarioJPA.setApellidopaterno(usuario.getApellidopaterno());
                 usuarioJPA.setApellidomaterno(usuario.getApellidomaterno());
                 usuarioJPA.setUsername(usuario.getUsername());
                 usuarioJPA.setCorreo(usuario.getCorreo());
-                usuarioJPA.setPassword(
-                        passwordEncoder.encode(usuario.getPassword())
-                );
-
+                usuarioJPA.setImagen(usuario.getImagen());
+ 
                 Rol rolJPA = entityManager.find(Rol.class, usuario.getRol().getIdrol());
                 usuarioJPA.setRol(rolJPA);
-
+ 
                 result.correct = true;
             } else {
                 result.correct = false;
                 return result;
             }
-
+ 
         } catch (Exception ex) {
             result.correct = false;
             result.errorMessage = ex.getLocalizedMessage();
@@ -193,6 +191,29 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
         
         return result;
         
+    }
+    
+    @Override
+    public Result ActualizarPassword(String correo, String nuevaPassword) {
+        Result result = new Result();
+        try {
+            TypedQuery<Usuario> query = entityManager.createQuery("FROM Usuario WHERE correo = :correo", Usuario.class);
+            query.setParameter("correo", correo);
+            Usuario usuario = query.getSingleResult();
+
+            if (usuario != null) {
+                usuario.setPassword(passwordEncoder.encode(nuevaPassword));
+                entityManager.merge(usuario);
+                result.correct = true;
+            } else {
+                result.correct = false;
+                result.errorMessage = "El usuario no existe.";
+            }
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+        }
+        return result;
     }
 
 }
