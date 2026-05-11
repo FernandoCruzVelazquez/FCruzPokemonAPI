@@ -2,14 +2,19 @@ package com.digis01.FCruzPokemonAPI.Component;
 
 import com.digis01.FCruzPokemonAPI.Service.JwtService;
 import com.digis01.FCruzPokemonAPI.Service.UsuarioDetailServiceImplementation;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -51,7 +56,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             UserDetails userDetails = this.userDetailService.loadUserByUsername(userName);
 
             if (jwtService.isTokenValid(jwt, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                
+                Claims claims = jwtService.extractAllClaims(jwt);
+                
+                List<Map<String, String>> rolesMap = claims.get("role", List.class);
+                
+                List<SimpleGrantedAuthority> authorities = rolesMap.stream()
+                        .map(role -> new SimpleGrantedAuthority(role.get("authority")))
+                        .collect(Collectors.toList());
+                
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
 
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 

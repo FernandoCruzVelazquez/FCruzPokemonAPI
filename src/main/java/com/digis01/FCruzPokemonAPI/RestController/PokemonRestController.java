@@ -6,6 +6,7 @@ import com.digis01.FCruzPokemonAPI.JPA.Pokemon;
 import com.digis01.FCruzPokemonAPI.JPA.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,7 @@ public class PokemonRestController {
     private PokemonDAOJPAImplementation pokemonDAOJPAImplementation;
     
     @PostMapping
+    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<Result> PokemonAdd(@RequestBody Pokemon pokemon){
         
         Result result = new Result();
