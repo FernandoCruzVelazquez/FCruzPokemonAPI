@@ -173,6 +173,7 @@ public class UsuarioRestController {
     }
 
     @PostMapping("/enviar-validacionPASS/{correo}")
+    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<Result> enviarCodigoPASS(@PathVariable String correo) {
 
         Result result = new Result();
@@ -201,6 +202,7 @@ public class UsuarioRestController {
     }
 
     @PostMapping("/confirmar-codigo-pass")
+    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<Result> confirmarCodigoPASS(@RequestBody Map<String, String> datos) {
         String correo = datos.get("correo");
         String codigoUsuario = datos.get("codigo");
@@ -267,6 +269,7 @@ public class UsuarioRestController {
     }
 
     @PutMapping("/updatePassword")
+    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<Result> ActualizarPassword(@RequestBody Usuario usuario) {
         Result result = new Result();
 
@@ -287,6 +290,7 @@ public class UsuarioRestController {
     }
 
     @PutMapping("/cambiar-estatus")
+    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<Result> cambiarEstatus(@RequestBody Map<String, Object> datos) {
         Result result = new Result();
         try {
