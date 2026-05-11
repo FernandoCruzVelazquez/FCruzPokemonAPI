@@ -13,6 +13,8 @@ public interface IUsuarioJPA {
     Result UsuarioDelete(Usuario usuario);
     Result GetByUserName(String userName);
     Result ActivarUsuario(String correo);
+    Result ActivacionUsuario(String correo);
+    Result DesactivacionUsuario(String correo);
     Result ActualizarPassword(String correo, String nuevaPassword);
     
 }

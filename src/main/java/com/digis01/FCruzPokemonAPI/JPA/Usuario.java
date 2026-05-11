@@ -21,6 +21,7 @@ public class Usuario {
     private String password;
     private String imagen;
     private int estado;
+    private int activacion;
     @ManyToOne
     @JoinColumn(name = "idrol")
     public Rol rol;
@@ -104,5 +105,14 @@ public class Usuario {
     public void setEstado(int estado) {
         this.estado = estado;
     }
+
+    public int getActivacion() {
+        return activacion;
+    }
+
+    public void setActivacion(int activacion) {
+        this.activacion = activacion;
+    }
+    
 
 }
