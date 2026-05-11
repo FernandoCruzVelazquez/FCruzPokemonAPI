@@ -25,7 +25,6 @@ public class FavoritoDAOJPAImplementation implements IFavorito {
 
         try {
 
-            // 1. Validar usuario
             Usuario usuario = entityManager.find(Usuario.class, idUsuario);
             if (usuario == null) {
                 result.correct = false;
@@ -33,7 +32,6 @@ public class FavoritoDAOJPAImplementation implements IFavorito {
                 return result;
             }
 
-            // 2. Validar si ya existe el favorito (evitar duplicados)
             String jpql = "SELECT COUNT(f) FROM Favorito f WHERE f.usuario.idusuario = :uid AND f.pokemon.idpokemon = :pid";
 
             Long count = entityManager.createQuery(jpql, Long.class)
@@ -47,7 +45,6 @@ public class FavoritoDAOJPAImplementation implements IFavorito {
                 return result;
             }
 
-            // 3. Buscar o crear el Pokémon (cache)
             Pokemon pokemon = entityManager.find(Pokemon.class, idPokemon);
 
             if (pokemon == null) {

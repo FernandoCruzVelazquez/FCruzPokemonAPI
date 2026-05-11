@@ -5,6 +5,7 @@ import com.digis01.FCruzPokemonAPI.DTO.FavoritoDTO;
 import com.digis01.FCruzPokemonAPI.JPA.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,7 @@ public class FavoritoRestController {
     private FavoritoDAOJPAImplementation favoritoDAOJPAImplementation;
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<Result> FavoritoAdd(@RequestBody FavoritoDTO dto) {
 
         try {
@@ -46,6 +48,7 @@ public class FavoritoRestController {
     }
 
     @DeleteMapping
+    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<Result> FavoritoDelete(
             @RequestParam int idUsuario,
             @RequestParam int idPokemon) {
@@ -71,6 +74,7 @@ public class FavoritoRestController {
     }
 
     @GetMapping("/{username}")
+    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<Result> GetMisFavoritos(@PathVariable String username) {
 
         Result result;
