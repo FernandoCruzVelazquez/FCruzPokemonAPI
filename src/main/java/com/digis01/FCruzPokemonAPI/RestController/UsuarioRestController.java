@@ -31,8 +31,6 @@ public class UsuarioRestController {
 
     private static final ConcurrentHashMap<String, String> memoryCodes = new ConcurrentHashMap<>();
 
-    
-    
     @PostMapping
     @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<Result> UsuarioAdd(@RequestBody Usuario usuario) {
@@ -173,7 +171,7 @@ public class UsuarioRestController {
             return ResponseEntity.status(500).body(result);
         }
     }
-    
+
     @PostMapping("/enviar-validacionPASS/{correo}")
     public ResponseEntity<Result> enviarCodigoPASS(@PathVariable String correo) {
 
@@ -201,7 +199,7 @@ public class UsuarioRestController {
             return ResponseEntity.status(500).body(result);
         }
     }
-    
+
     @PostMapping("/confirmar-codigo-pass")
     public ResponseEntity<Result> confirmarCodigoPASS(@RequestBody Map<String, String> datos) {
         String correo = datos.get("correo");
@@ -209,7 +207,7 @@ public class UsuarioRestController {
         Result result = new Result();
 
         if (memoryCodes.containsKey(correo) && memoryCodes.get(correo).equals(codigoUsuario)) {
-            memoryCodes.remove(correo); 
+            memoryCodes.remove(correo);
             result.correct = true;
             result.object = "Código validado correctamente";
             return ResponseEntity.ok(result);
@@ -267,7 +265,7 @@ public class UsuarioRestController {
             return ResponseEntity.status(500).body(result);
         }
     }
-    
+
     @PutMapping("/updatePassword")
     public ResponseEntity<Result> ActualizarPassword(@RequestBody Usuario usuario) {
         Result result = new Result();
@@ -287,7 +285,7 @@ public class UsuarioRestController {
             return ResponseEntity.status(500).body(result);
         }
     }
-    
+
     @PutMapping("/cambiar-estatus")
     public ResponseEntity<Result> cambiarEstatus(@RequestBody Map<String, Object> datos) {
         Result result = new Result();
@@ -331,75 +329,6 @@ public class UsuarioRestController {
         }
 
         mailSender.send(message);
-    }
-
-    @PostMapping("/enviar-validacionPASS/{correo}")
-    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
-    public ResponseEntity<Result> enviarCodigoPASS(@PathVariable String correo) {
-
-        Result result = new Result();
-        try {
-
-            String codigo = String.valueOf((int) (Math.random() * 900000) + 100000);
-            memoryCodes.put(correo, codigo);
-
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(correo);
-            message.setSubject("Verificación de cuenta - PokeAPI");
-            message.setText("¡Hola! Tu código de confirmación es: " + codigo
-                    + "\nPor favor, ingresalo en la aplicación para actualizar tu contraseña.");
-
-            mailSender.send(message);
-
-            result.correct = true;
-            result.object = "Código enviado a " + correo;
-            return ResponseEntity.ok(result);
-
-        } catch (Exception ex) {
-            result.correct = false;
-            result.errorMessage = "Error al enviar correo: " + ex.getLocalizedMessage();
-            return ResponseEntity.status(500).body(result);
-        }
-    }
-
-    @PostMapping("/confirmar-codigo-pass")
-    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
-    public ResponseEntity<Result> confirmarCodigoPASS(@RequestBody Map<String, String> datos) {
-        String correo = datos.get("correo");
-        String codigoUsuario = datos.get("codigo");
-        Result result = new Result();
-
-        if (memoryCodes.containsKey(correo) && memoryCodes.get(correo).equals(codigoUsuario)) {
-            memoryCodes.remove(correo);
-            result.correct = true;
-            result.object = "Código validado correctamente";
-            return ResponseEntity.ok(result);
-        }
-
-        result.correct = false;
-        result.errorMessage = "El código es incorrecto o ya expiró";
-        return ResponseEntity.badRequest().body(result);
-    }
-
-    @PutMapping("/updatePassword")
-    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
-    public ResponseEntity<Result> ActualizarPassword(@RequestBody Usuario usuario) {
-        Result result = new Result();
-
-        try {
-            result = usuarioDAOJPAImplementation.ActualizarPassword(usuario.getCorreo(), usuario.getPassword());
-
-            if (result.correct) {
-                return ResponseEntity.ok(result);
-            } else {
-                return ResponseEntity.badRequest().body(result);
-            }
-
-        } catch (Exception ex) {
-            result.correct = false;
-            result.errorMessage = ex.getLocalizedMessage();
-            return ResponseEntity.status(500).body(result);
-        }
     }
 
 }

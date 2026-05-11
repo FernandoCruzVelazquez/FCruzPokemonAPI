@@ -218,29 +218,6 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
     }
     
     @Override
-    public Result ActualizarPassword(String correo, String nuevaPassword) {
-        Result result = new Result();
-        try {
-            TypedQuery<Usuario> query = entityManager.createQuery("FROM Usuario WHERE correo = :correo", Usuario.class);
-            query.setParameter("correo", correo);
-            Usuario usuario = query.getSingleResult();
-
-            if (usuario != null) {
-                usuario.setPassword(passwordEncoder.encode(nuevaPassword));
-                entityManager.merge(usuario);
-                result.correct = true;
-            } else {
-                result.correct = false;
-                result.errorMessage = "El usuario no existe.";
-            }
-        } catch (Exception ex) {
-            result.correct = false;
-            result.errorMessage = ex.getLocalizedMessage();
-        }
-        return result;
-    }
-    
-    @Override
     public Result ActivacionUsuario(String correo) {
         
         Result result = new Result();
