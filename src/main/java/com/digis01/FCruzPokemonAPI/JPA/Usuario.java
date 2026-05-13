@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Transient;
 
 @Entity
 public class Usuario {
@@ -19,8 +20,11 @@ public class Usuario {
     private String username;
     private String correo;
     private String password;
+    @Transient
+    private String oldPassword;
     private String imagen;
     private int estado;
+    private int activacion;
     @ManyToOne
     @JoinColumn(name = "idrol")
     public Rol rol;
@@ -105,4 +109,22 @@ public class Usuario {
         this.estado = estado;
     }
 
+    public int getActivacion() {
+        return activacion;
+    }
+
+    public void setActivacion(int activacion) {
+        this.activacion = activacion;
+    }
+
+    public String getOldPassword() {
+        return oldPassword;
+    }
+
+    public void setOldPassword(String oldPassword) {
+        this.oldPassword = oldPassword;
+    }
+    
+    
+    
 }

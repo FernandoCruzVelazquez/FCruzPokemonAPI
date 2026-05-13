@@ -234,9 +234,9 @@ public class UsuarioRestController {
 
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(correo);
-            message.setSubject("Verificación de cuenta - PokeAPI");
-            message.setText("¡Hola! Tu código de confirmación es: " + codigo
-                    + "\nPor favor, ingresalo en la aplicación para actualizar tu contraseña.");
+            message.setSubject("Validación de cuenta - PokeAPI");
+            message.setText("¡Hola! Tu código de confirmación para cambiar tu contraseña es: " + codigo
+                    + "\nPor favor, ingresalo en la pagina para actualizar tu contraseña.");
 
             mailSender.send(message);
 
@@ -289,6 +289,62 @@ public class UsuarioRestController {
             result.errorMessage = ex.getLocalizedMessage();
             return ResponseEntity.status(500).body(result);
         }
+    }
+    
+    @PutMapping("/cambiar-estatus")
+    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
+    public ResponseEntity<Result> cambiarEstatus(@RequestBody Map<String, Object> datos) {
+        Result result = new Result();
+        try {
+            String correo = (String) datos.get("correo");
+            boolean activar = (boolean) datos.get("estatus");
+
+            if (activar) {
+                result = usuarioDAOJPAImplementation.ActivacionUsuario(correo);
+            } else {
+                result = usuarioDAOJPAImplementation.DesactivacionUsuario(correo);
+            }
+
+            if (result.correct) {
+                enviarCorreoEstatus(correo, activar);
+                result.object = "Estado actualizado y notificación enviada.";
+                return ResponseEntity.ok(result);
+            } else {
+                return ResponseEntity.badRequest().body(result);
+            }
+
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = "Error en el cambio de estatus: " + ex.getMessage();
+            return ResponseEntity.status(500).body(result);
+        }
+    }
+
+    private void enviarCorreoEstatus(String correo, boolean fueActivado) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(correo);
+
+        if (fueActivado) {
+            message.setSubject("¡Tu cuenta ha sido Reactivada! - PokeAPI");
+            message.setText("¡Hola de nuevo!\n\nTu cuenta de Entrenador en PokeAPI ha sido activada correctamente. "
+                    + "Ya puedes iniciar sesión y continuar tu aventura, http://localhost:4200/ ");
+        } else {
+            message.setSubject("Notificación de cuenta Desactivada - PokeAPI");
+            message.setText("Hola.\n\nTe informamos que tu cuenta en PokeAPI ha sido desactivada temporalmente por un administrador. "
+                    + "Si crees que esto es un error, por favor contáctanos.");
+        }
+
+        mailSender.send(message);
+    }
+    
+    @PutMapping("/reset-password")
+    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
+    public ResponseEntity<Result> resetPassword(@RequestBody Map<String, String> payload) {
+        String correo = payload.get("correo");
+        String password = payload.get("password");
+
+        Result result = usuarioDAOJPAImplementation.cambiarPasswordDirecto(correo, password);
+        return ResponseEntity.ok(result);
     }
 
 }
