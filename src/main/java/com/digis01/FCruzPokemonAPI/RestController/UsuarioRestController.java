@@ -46,6 +46,7 @@ public class UsuarioRestController {
     
     @Operation(summary = "Registrar usuario", description = "Crea un nuevo usuario en el sistema.")
     @PostMapping
+    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<Result> UsuarioAdd(@RequestBody Usuario usuario) {
 
         Result result = new Result();
@@ -162,6 +163,7 @@ public class UsuarioRestController {
     
     @Operation(summary = "Enviar código de activación", description = "Genera un código aleatorio y lo envía al correo del usuario para validar su cuenta.")
     @PostMapping("/enviar-validacion/{correo}")
+    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<Result> enviarCodigo(@PathVariable String correo) {
 
         Result result = new Result();
@@ -197,6 +199,7 @@ public class UsuarioRestController {
         )
     )
     @PostMapping("/confirmar-codigo")
+    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<Result> confirmarCodigo(@RequestBody Map<String, String> datos) {
 
         String correo = datos.get("correo");
@@ -219,6 +222,7 @@ public class UsuarioRestController {
     }
 
     @PostMapping("/bienvenida/{correo}")
+    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<Result> enviarBienvenida(@PathVariable String correo) {
         Result result = new Result();
         try {

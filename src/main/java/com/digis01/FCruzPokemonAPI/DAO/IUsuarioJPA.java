@@ -16,6 +16,5 @@ public interface IUsuarioJPA {
     Result ActivacionUsuario(String correo);
     Result DesactivacionUsuario(String correo);
     Result ActualizarPassword(String correo, String nuevaPassword);
-    Result cambiarPasswordDirecto(String correo, String nuevaPassword);
     
 }

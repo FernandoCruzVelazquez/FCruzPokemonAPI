@@ -68,13 +68,13 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
 
     @Override
     public Result UsuarioUpdate(Usuario usuario) {
-
+ 
         Result result = new Result();
-
+ 
         try {
-
+ 
             Usuario usuarioJPA = entityManager.find(Usuario.class, usuario.getIdusuario());
-
+ 
             if (usuarioJPA != null) {
                 usuarioJPA.setNombreusuario(usuario.getNombreusuario());
                 usuarioJPA.setApellidopaterno(usuario.getApellidopaterno());
@@ -85,13 +85,13 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
 
                 Rol rolJPA = entityManager.find(Rol.class, usuario.getRol().getIdrol());
                 usuarioJPA.setRol(rolJPA);
-
+ 
                 result.correct = true;
             } else {
                 result.correct = false;
                 return result;
             }
-
+ 
         } catch (Exception ex) {
             result.correct = false;
             result.errorMessage = ex.getLocalizedMessage();
