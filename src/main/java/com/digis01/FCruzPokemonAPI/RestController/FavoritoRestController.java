@@ -96,4 +96,23 @@ public class FavoritoRestController {
         }
     }
 
+    @GetMapping("/ranking")
+    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
+    public ResponseEntity<Result> GetRankingPokemon() {
+        Result result = new Result();
+
+        try {
+
+            result = favoritoDAOJPAImplementation.GetRankingPokemon();
+
+            return result.correct ? ResponseEntity.ok(result) : ResponseEntity.badRequest().body(result);
+
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getMessage();
+
+            return ResponseEntity.status(500).body(result);
+        }
+    }
+
 }

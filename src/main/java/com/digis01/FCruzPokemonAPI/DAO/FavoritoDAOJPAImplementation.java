@@ -1,15 +1,17 @@
 package com.digis01.FCruzPokemonAPI.DAO;
 
+import com.digis01.FCruzPokemonAPI.DTO.RankingPokemonDTO;
 import com.digis01.FCruzPokemonAPI.JPA.Favorito;
 import com.digis01.FCruzPokemonAPI.JPA.Pokemon;
 import com.digis01.FCruzPokemonAPI.JPA.Result;
 import com.digis01.FCruzPokemonAPI.JPA.Usuario;
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
@@ -69,7 +71,6 @@ public class FavoritoDAOJPAImplementation implements IFavorito {
             result.correct = false;
             result.errorMessage = ex.getMessage(); // mejor que localized
         }
-
         return result;
     }
 
@@ -98,7 +99,6 @@ public class FavoritoDAOJPAImplementation implements IFavorito {
             result.correct = false;
             result.errorMessage = ex.getMessage();
         }
-
         return result;
     }
 
@@ -126,7 +126,34 @@ public class FavoritoDAOJPAImplementation implements IFavorito {
             result.correct = false;
             result.errorMessage = ex.getMessage();
         }
+        return result;
+    }
 
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Result GetRankingPokemon() {
+
+        Result result = new Result();
+
+        try {
+            String consulta = "SELECT new com.digis01.FCruzPokemonAPI.DTO.RankingPokemonDTO(f.pokemon, COUNT(f.pokemon.idpokemon)) "
+                    + "FROM Favorito f "
+                    + "GROUP BY f.pokemon " 
+                    + "ORDER BY COUNT(f.pokemon.idpokemon) DESC";
+
+            List<RankingPokemonDTO> lista = entityManager
+                    .createQuery(consulta, RankingPokemonDTO.class)
+                    .setMaxResults(10)
+                    .getResultList();
+
+            result.objects = new ArrayList<>(lista);
+            result.correct = true;
+
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getMessage();
+            ex.printStackTrace(); // Mantenemos el rastro por si acaso
+        }
         return result;
     }
 

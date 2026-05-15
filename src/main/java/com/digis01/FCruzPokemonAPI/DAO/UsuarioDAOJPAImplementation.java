@@ -238,9 +238,7 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
             result.correct = false;
             result.errorMessage = ex.getLocalizedMessage();
         }
-        
         return result;
-        
     }
     
     @Override
@@ -264,9 +262,7 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
             result.correct = false;
             result.errorMessage = ex.getLocalizedMessage();
         }
-        
         return result;
-        
     }
 
 }
