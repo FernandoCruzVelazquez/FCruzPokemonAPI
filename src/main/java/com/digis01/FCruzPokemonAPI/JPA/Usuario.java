@@ -1,5 +1,6 @@
 package com.digis01.FCruzPokemonAPI.JPA;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,24 +10,48 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Transient;
 
 @Entity
+@Schema(description = "Modelo que representa a un Entrenador en el sistema")
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "ID autoincremental del usuario", example = "1")
     private int idusuario;
+
+    @Schema(description = "Nombre(s) del usuario", example = "Ash")
     private String nombreusuario;
+
+    @Schema(description = "Apellido paterno", example = "Ketchum")
     private String apellidopaterno;
+
+    @Schema(description = "Apellido materno", example = "Satoshi")
     private String apellidomaterno;
+
+    @Schema(description = "Nombre de usuario único para login", example = "ash_master")
     private String username;
+
+    @Schema(description = "Correo electrónico institucional o personal", example = "ash@pueblopaleta.com")
     private String correo;
+
+    @Schema(description = "Contraseña de acceso", example = "PikaPika123", accessMode = Schema.AccessMode.WRITE_ONLY)
     private String password;
+
     @Transient
+    @Schema(description = "Campo temporal para validación de cambio de password", hidden = true)
     private String oldPassword;
+
+    @Schema(description = "URL de la imagen de perfil o avatar", example = "https://midominio.com/perfil.png")
     private String imagen;
+
+    @Schema(description = "Estado lógico del usuario (1: Activo, 0: Inactivo)", example = "1")
     private int estado;
+
+    @Schema(description = "Estatus de activación por correo (1: Validado, 0: Pendiente)", example = "1")
     private int activacion;
+
     @ManyToOne
     @JoinColumn(name = "idrol")
+    @Schema(description = "Rol asignado al usuario (Profesor, Maestro, Entrenador)")
     public Rol rol;
 
     public int getIdusuario() {

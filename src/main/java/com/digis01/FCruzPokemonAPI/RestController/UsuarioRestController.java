@@ -3,6 +3,7 @@ package com.digis01.FCruzPokemonAPI.RestController;
 import com.digis01.FCruzPokemonAPI.DAO.UsuarioDAOJPAImplementation;
 import com.digis01.FCruzPokemonAPI.JPA.Result;
 import com.digis01.FCruzPokemonAPI.JPA.Usuario;
+import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +19,20 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("api/usuario")
+@Tag(name = "Usuarios", description = "Gestión de perfiles, activación de cuentas y recuperación de contraseñas")
+@SecurityRequirement(name = "JavaInUseSecurityScheme")
 public class UsuarioRestController {
 
     @Autowired
@@ -32,9 +44,8 @@ public class UsuarioRestController {
     private static final ConcurrentHashMap<String, String> memoryCodes = new ConcurrentHashMap<>();
 
     
-    
+    @Operation(summary = "Registrar usuario", description = "Crea un nuevo usuario en el sistema.")
     @PostMapping
-    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<Result> UsuarioAdd(@RequestBody Usuario usuario) {
 
         Result result = new Result();
@@ -55,7 +66,8 @@ public class UsuarioRestController {
             return ResponseEntity.status(500).body(result);
         }
     }
-
+    
+    @Operation(summary = "Actualizar perfil", description = "Modifica los datos del usuario.")
     @PutMapping("/update")
     @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<Result> UsuarioUpdate(@RequestBody Usuario usuario) {
@@ -77,7 +89,8 @@ public class UsuarioRestController {
             return ResponseEntity.status(500).body(result);
         }
     }
-
+    
+    @Operation(summary = "Eliminar usuario", description = "Borra un usuario por ID. Solo accesible por **Profesor**.")
     @DeleteMapping("/deleteUsuario/{idUsuario}")
     @PreAuthorize("hasRole('Profesor')")
     public ResponseEntity UsuarioDelete(@PathVariable int idUsuario) {
@@ -99,7 +112,8 @@ public class UsuarioRestController {
             return ResponseEntity.status(500).body(ex.getLocalizedMessage());
         }
     }
-
+    
+    @Operation(summary = "Listar todos los usuarios", description = "Obtiene la lista completa de usuarios. Solo accesible por **Profesor**.")
     @GetMapping("/usuarios")
     @PreAuthorize("hasRole('Profesor')")
     public ResponseEntity usuarioGetAll() {
@@ -123,7 +137,8 @@ public class UsuarioRestController {
             return ResponseEntity.status(500).body(result);
         }
     }
-
+    
+    @Operation(summary = "Obtener perfil por ID", description = "Recupera la información detallada de un usuario.")
     @GetMapping("/perfil/{idUsuario}")
     @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<?> UsuarioGetById(@PathVariable int idUsuario) {
@@ -144,9 +159,9 @@ public class UsuarioRestController {
             return ResponseEntity.status(500).body(ex);
         }
     }
-
+    
+    @Operation(summary = "Enviar código de activación", description = "Genera un código aleatorio y lo envía al correo del usuario para validar su cuenta.")
     @PostMapping("/enviar-validacion/{correo}")
-    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<Result> enviarCodigo(@PathVariable String correo) {
 
         Result result = new Result();
@@ -173,9 +188,15 @@ public class UsuarioRestController {
             return ResponseEntity.status(500).body(result);
         }
     }
-
+    
+    @Operation(
+        summary = "Confirmar código de activación",
+        description = "Valida el código enviado al correo y activa la cuenta del usuario.",
+        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = @Content(examples = @ExampleObject(value = "{\"correo\": \"entrenador@gmail.com\", \"codigo\": \"123456\"}"))
+        )
+    )
     @PostMapping("/confirmar-codigo")
-    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<Result> confirmarCodigo(@RequestBody Map<String, String> datos) {
 
         String correo = datos.get("correo");
@@ -198,7 +219,6 @@ public class UsuarioRestController {
     }
 
     @PostMapping("/bienvenida/{correo}")
-    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<Result> enviarBienvenida(@PathVariable String correo) {
         Result result = new Result();
         try {
@@ -207,7 +227,8 @@ public class UsuarioRestController {
             message.setSubject("¡Bienvenido Entrenador! - PokeAPI - F&F");
             message.setText("¡Hola!\n\nTu cuenta en PokeAPI - F&F se ha creado con éxito. "
                     + "Estamos felices de tenerte en nuestra comunidad.\n"
-                    + "¡Prepárate para tu aventura Pokémon!");
+                    + "¡Prepárate para tu aventura Pokémon!"
+                    + "Entra a http://192.167.0.176:4200/ y comienza tu aventura");
 
             mailSender.send(message);
 
@@ -221,9 +242,31 @@ public class UsuarioRestController {
             return ResponseEntity.status(500).body(result);
         }
     }
+    
+    @PostMapping("/enviar-enlace-validacion/{correo}")
+    public ResponseEntity<Result> enviarEnlace(@PathVariable String correo) {
+        Result result = new Result();
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(correo);
+            message.setSubject("Activa tu cuenta de Entrenador - PokeAPI");
+
+            String enlace = "http://192.167.0.65:8081/api/usuario/activar-cuenta/" + correo;
+
+            message.setText("¡Hola!\n\nPara comenzar tu aventura Pokémon, activa tu cuenta haciendo clic aquí:\n" 
+                            + enlace);
+
+            mailSender.send(message);
+            result.correct = true;
+            return ResponseEntity.ok(result);
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getMessage(); // Agregado para saber qué falló
+            return ResponseEntity.status(500).body(result);
+        }
+    }
 
     @PostMapping("/enviar-validacionPASS/{correo}")
-    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<Result> enviarCodigoPASS(@PathVariable String correo) {
 
         Result result = new Result();
@@ -252,7 +295,6 @@ public class UsuarioRestController {
     }
 
     @PostMapping("/confirmar-codigo-pass")
-    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<Result> confirmarCodigoPASS(@RequestBody Map<String, String> datos) {
         String correo = datos.get("correo");
         String codigoUsuario = datos.get("codigo");
@@ -271,7 +313,6 @@ public class UsuarioRestController {
     }
 
     @PutMapping("/updatePassword")
-    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<Result> ActualizarPassword(@RequestBody Usuario usuario) {
         Result result = new Result();
 
@@ -291,8 +332,8 @@ public class UsuarioRestController {
         }
     }
     
+    @Operation(summary = "Cambiar estatus de cuenta", description = "Activa o desactiva a un usuario y envía una notificación por correo.")
     @PutMapping("/cambiar-estatus")
-    @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<Result> cambiarEstatus(@RequestBody Map<String, Object> datos) {
         Result result = new Result();
         try {
@@ -327,7 +368,7 @@ public class UsuarioRestController {
         if (fueActivado) {
             message.setSubject("¡Tu cuenta ha sido Reactivada! - PokeAPI");
             message.setText("¡Hola de nuevo!\n\nTu cuenta de Entrenador en PokeAPI ha sido activada correctamente. "
-                    + "Ya puedes iniciar sesión y continuar tu aventura, http://localhost:4200/ ");
+                    + "Ya puedes iniciar sesión y continuar tu aventura, http://192.167.0.176:4200/ ");
         } else {
             message.setSubject("Notificación de cuenta Desactivada - PokeAPI");
             message.setText("Hola.\n\nTe informamos que tu cuenta en PokeAPI ha sido desactivada temporalmente por un administrador. "
@@ -337,6 +378,7 @@ public class UsuarioRestController {
         mailSender.send(message);
     }
     
+    @Operation(summary = "Cambiar contraseña directo", description = "Actualiza la contraseña de un usuario mediante correo y nueva clave.")
     @PutMapping("/reset-password")
     @PreAuthorize("hasAnyRole('Profesor', 'Maestro', 'Entrenador')")
     public ResponseEntity<Result> resetPassword(@RequestBody Map<String, String> payload) {
@@ -345,6 +387,17 @@ public class UsuarioRestController {
 
         Result result = usuarioDAOJPAImplementation.cambiarPasswordDirecto(correo, password);
         return ResponseEntity.ok(result);
+    }
+    
+    @Operation(summary = "Validación vía enlace", description = "Activa la cuenta al hacer clic en el botón del correo.")
+    @GetMapping("/activar-cuenta/{correo}")
+    public ResponseEntity<Void> activarViaEnlace(@PathVariable String correo) {
+        usuarioDAOJPAImplementation.ActivacionUsuario(correo);
+
+
+        return ResponseEntity.status(HttpStatus.FOUND)
+                             .location(URI.create("http://192.167.0.65:4200/activacion-exitosa"))
+                             .build();
     }
 
 }

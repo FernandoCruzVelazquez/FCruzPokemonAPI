@@ -35,6 +35,23 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**").permitAll()
+                
+                .requestMatchers("/v3/api-docs/**").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/swagger-ui.html").permitAll()
+                        
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/usuario").permitAll()
+                        
+                .requestMatchers("/api/usuario/enviar-validacion/**").permitAll()
+                .requestMatchers("/api/usuario/confirmar-codigo").permitAll()
+                .requestMatchers("/api/usuario/enviar-validacionPASS/**").permitAll()
+                .requestMatchers("/api/usuario/confirmar-codigo-pass").permitAll()
+                .requestMatchers("/api/usuario/updatePassword").permitAll()
+                .requestMatchers("/api/usuario/perfil/**").permitAll()
+                .requestMatchers("/api/usuario/bienvenida/**").permitAll()
+                        
+                .requestMatchers("/api/usuario/activar-cuenta/**").permitAll()
+                        
                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
