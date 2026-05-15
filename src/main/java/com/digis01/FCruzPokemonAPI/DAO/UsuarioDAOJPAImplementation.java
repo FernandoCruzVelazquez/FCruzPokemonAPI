@@ -264,5 +264,28 @@ public class UsuarioDAOJPAImplementation implements IUsuarioJPA {
         }
         return result;
     }
+    
+    @Override
+    public Result cambiarPasswordDirecto(String correo, String nuevaPassword) {
+        Result result = new Result();
+        try {
+            int filasAfectadas = entityManager.createQuery(
+                "UPDATE Usuario u SET u.password = :pass WHERE u.correo = :correo")
+                .setParameter("pass", passwordEncoder.encode(nuevaPassword))
+                .setParameter("correo", correo)
+                .executeUpdate();
+
+            if (filasAfectadas > 0) {
+                result.correct = true;
+            } else {
+                result.correct = false;
+                result.errorMessage = "No se encontró el usuario para actualizar.";
+            }
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = "Error al cambiar password: " + ex.getMessage();
+        }
+        return result;
+    }
 
 }

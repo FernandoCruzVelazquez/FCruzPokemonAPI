@@ -14,9 +14,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Autenticación", description = "Endpoints para el manejo de sesiones y tokens JWT")
 public class AuthRestController {
 
     @Autowired
@@ -28,8 +35,29 @@ public class AuthRestController {
     @Autowired
     private JwtService jwtService;
 
+    @Operation(
+        summary = "Inicio de sesión",
+        description = "Autentica a un usuario y devuelve un token JWT junto con su información básica.",
+        responses = {
+            @ApiResponse(
+                responseCode = "200", 
+                description = "Autenticación exitosa",
+                content = @Content(mediaType = "application/json", 
+                examples = @ExampleObject(value = "{ \"token\": \"eyJhbG...\", \"username\": \"pika\", \"idusuario\": 1, \"nombreCompleto\": \"Ash Ketchum\" }"))
+            ),
+            @ApiResponse(responseCode = "401", description = "Credenciales inválidas", content = @Content)
+        }
+    )
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
+    public ResponseEntity<?> login(
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Credenciales del usuario",
+            required = true,
+            content = @Content(
+                examples = @ExampleObject(value = "{ \"username\": \"usuario123\", \"password\": \"password123\" }")
+            )
+        )
+        @RequestBody Map<String, String> loginRequest) {
 
         String username = loginRequest.get("username");
         String password = loginRequest.get("password");
@@ -50,5 +78,4 @@ public class AuthRestController {
 
         return ResponseEntity.ok(response);
     }
-
 }
