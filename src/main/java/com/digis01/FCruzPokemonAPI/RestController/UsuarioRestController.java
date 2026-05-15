@@ -226,13 +226,29 @@ public class UsuarioRestController {
     public ResponseEntity<Result> enviarBienvenida(@PathVariable String correo) {
         Result result = new Result();
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(correo);
-            message.setSubject("¡Bienvenido Entrenador! - PokeAPI - F&F");
-            message.setText("¡Hola!\n\nTu cuenta en PokeAPI - F&F se ha creado con éxito. "
-                    + "Estamos felices de tenerte en nuestra comunidad.\n"
-                    + "¡Prepárate para tu aventura Pokémon!"
-                    + "Entra a http://192.167.0.176:4200/ y comienza tu aventura");
+            jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
+            org.springframework.mail.javamail.MimeMessageHelper helper = 
+                    new org.springframework.mail.javamail.MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setTo(correo);
+            helper.setSubject("¡Bienvenido Entrenador! - PokeAPI - F&F");
+
+            String urlAventura = "http://192.167.0.79:4200/";
+
+            // Estilo HTML embebido directamente
+            String htmlBody = "<div style=\"font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;\">"
+                    + "<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden;\">"
+                    + "<tr><td bgcolor=\"#ef5350\" style=\"padding: 25px; text-align: center;\"><h1 style=\"color: white; margin: 0; text-transform: uppercase;\">¡Tu aventura comienza!</h1></td></tr>"
+                    + "<tr><td bgcolor=\"#263238\" style=\"padding: 4px;\"></td></tr>"
+                    + "<tr><td style=\"padding: 30px;\">"
+                    + "<p style=\"font-size: 16px; color: #333;\">¡Hola!<br><br>Tu cuenta en <strong>PokeAPI - F&F</strong> se ha creado con éxito. Estamos felices de tenerte en nuestra comunidad de entrenadores.</p>"
+                    + "<div style=\"text-align: center; margin: 30px 0;\">"
+                    + "<a href=\"" + urlAventura + "\" style=\"background-color: #ef5350; color: white; padding: 12px 25px; text-decoration: none; font-weight: bold; border-radius: 25px; border: 2px solid #263238; display: inline-block; text-transform: uppercase;\">Iniciar Aventura</a>"
+                    + "</div>"
+                    + "</td></tr>"
+                    + "</table></div>";
+
+            helper.setText(htmlBody, true); // El 'true' activa el renderizado de HTML
 
             mailSender.send(message);
 
@@ -251,21 +267,36 @@ public class UsuarioRestController {
     public ResponseEntity<Result> enviarEnlace(@PathVariable String correo) {
         Result result = new Result();
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(correo);
-            message.setSubject("Activa tu cuenta de Entrenador - PokeAPI");
+            jakarta.mail.internet.MimeMessage message = mailSender.createMimeMessage();
+            org.springframework.mail.javamail.MimeMessageHelper helper = 
+                    new org.springframework.mail.javamail.MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setTo(correo);
+            helper.setSubject("Activa tu cuenta de Entrenador - PokeAPI");
 
             String enlace = "http://192.167.0.65:8081/api/usuario/activar-cuenta/" + correo;
 
-            message.setText("¡Hola!\n\nPara comenzar tu aventura Pokémon, activa tu cuenta haciendo clic aquí:\n" 
-                            + enlace);
+            String htmlBody = "<div style=\"font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;\">"
+                    + "<table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden;\">"
+                    + "<tr><td bgcolor=\"#ef5350\" style=\"padding: 25px; text-align: center;\"><h1 style=\"color: white; margin: 0; text-transform: uppercase;\">¡Verificación de Cuenta!</h1></td></tr>"
+                    + "<tr><td bgcolor=\"#263238\" style=\"padding: 4px;\"></td></tr>"
+                    + "<tr><td style=\"padding: 30px;\">"
+                    + "<p style=\"font-size: 16px; color: #333;\">¡Hola!<br><br>Para poder capturar tus Pokémon y registrar tus batallas en la Pokédex, primero debes validar tu identidad de Entrenador.</p>"
+                    + "<div style=\"text-align: center; margin: 30px 0;\">"
+                    + "<a href=\"" + enlace + "\" style=\"background-color: #4caf50; color: white; padding: 12px 25px; text-decoration: none; font-weight: bold; border-radius: 25px; border: 2px solid #263238; display: inline-block; text-transform: uppercase;\">Activar mi Cuenta</a>"
+                    + "</div>"
+                    + "<p style=\"font-size: 12px; color: #777;\">Este enlace expira pronto. No lo compartas con el Equipo Rocket.</p>"
+                    + "</td></tr>"
+                    + "</table></div>";
+
+            helper.setText(htmlBody, true);
 
             mailSender.send(message);
             result.correct = true;
             return ResponseEntity.ok(result);
         } catch (Exception ex) {
             result.correct = false;
-            result.errorMessage = ex.getMessage(); // Agregado para saber qué falló
+            result.errorMessage = ex.getMessage();
             return ResponseEntity.status(500).body(result);
         }
     }
@@ -372,7 +403,7 @@ public class UsuarioRestController {
         if (fueActivado) {
             message.setSubject("¡Tu cuenta ha sido Reactivada! - PokeAPI");
             message.setText("¡Hola de nuevo!\n\nTu cuenta de Entrenador en PokeAPI ha sido activada correctamente. "
-                    + "Ya puedes iniciar sesión y continuar tu aventura, http://192.167.0.176:4200/ ");
+                    + "Ya puedes iniciar sesión y continuar tu aventura, http://192.167.0.79:4200/ ");
         } else {
             message.setSubject("Notificación de cuenta Desactivada - PokeAPI");
             message.setText("Hola.\n\nTe informamos que tu cuenta en PokeAPI ha sido desactivada temporalmente por un administrador. "
@@ -400,7 +431,7 @@ public class UsuarioRestController {
 
 
         return ResponseEntity.status(HttpStatus.FOUND)
-                             .location(URI.create("http://192.167.0.65:4200/activacion-exitosa"))
+                             .location(URI.create("http://192.167.0.79:4200/activacion-exitosa"))
                              .build();
     }
 
